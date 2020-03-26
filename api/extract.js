@@ -1,6 +1,6 @@
 const chrome = require("chrome-aws-lambda");
 const puppeteer = require("puppeteer-core");
-const cors = require('micro-cors')()
+const cors = require("micro-cors")();
 const { validUrl } = require("../lib/url");
 
 const wait = timeout => new Promise(resolve => setTimeout(resolve, timeout));
@@ -14,7 +14,7 @@ async function extractMetadata(url) {
 
   const page = await browser.newPage();
   await page.goto(url);
-  await wait(2000);
+  await wait(1000);
 
   return {
     title: await page.title()
@@ -22,11 +22,14 @@ async function extractMetadata(url) {
 }
 
 const handler = async (req, res) => {
+  if (req.method === "OPTIONS") {
+    return res.status(200).send("OK");
+  }
+
   const { url } = req.query;
 
   if (!url || !validUrl(url)) {
-    res.status(400).send("Bad Request");
-    return;
+    return res.status(400).send("Bad Request");
   }
 
   const meta = await extractMetadata(url);
@@ -35,4 +38,4 @@ const handler = async (req, res) => {
   });
 };
 
-module.exports = cors(handler)
+module.exports = cors(handler);
