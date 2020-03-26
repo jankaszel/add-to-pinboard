@@ -1,93 +1,27 @@
-*Looking for a shareable component template? Go here --> [sveltejs/component-template](https://github.com/sveltejs/component-template)*
+# Add to Pinboard 📬
 
----
+[Pinboard's](https://pinboard.in/) UI for adding URLs is... simple. For one, you need to specify the entry title by yourself, while taking the website's title from its metadata would be more convenient. This small tool uses a headless Chromium browser via [Puppeteer](https://github.com/puppeteer/puppeteer/) to extract a website's metadata directly and provides a simple UI for easily adding URLs to Pinboard.
 
-# svelte app
-
-This is a project template for [Svelte](https://svelte.dev) apps. It lives at https://github.com/sveltejs/template.
-
-To create a new project based on this template using [degit](https://github.com/Rich-Harris/degit):
-
-```bash
-npx degit sveltejs/template svelte-app
-cd svelte-app
-```
-
-*Note that you will need to have [Node.js](https://nodejs.org) installed.*
-
+This project uses [Svelte](https://svelte.dev/) for building the frontend and Node.js on the backend. More precisely, frontend and backend are set up in a way to be run on the [Zeit Now](https://zeit.co/) infrastructure for easy deployments.
 
 ## Get started
 
-Install the dependencies...
+With a recent Node.js (`>= 13.6`), install all dependencies via `npm install`. Then:
+* Start a [Rollup](https://rollupjs.org) development server via `npm run dev` and navigate to [`http://localhost:5000/`](http://localhost:5000).
+* Create a production build via `npm run build`.
+* Run a local web server via `npm start`.
 
-```bash
-cd svelte-app
-npm install
-```
+By default, the development server will only respond to requests from localhost. To allow connections from other computers, edit the `sirv` commands in package.json to include the option `--host 0.0.0.0`.
 
-...then start [Rollup](https://rollupjs.org):
-
-```bash
-npm run dev
-```
-
-Navigate to [localhost:5000](http://localhost:5000). You should see your app running. Edit a component file in `src`, save it, and reload the page to see your changes.
-
-By default, the server will only respond to requests from localhost. To allow connections from other computers, edit the `sirv` commands in package.json to include the option `--host 0.0.0.0`.
-
-
-## Building and running in production mode
-
-To create an optimised version of the app:
-
-```bash
-npm run build
-```
-
-You can run the newly built app with `npm run start`. This uses [sirv](https://github.com/lukeed/sirv), which is included in your package.json's `dependencies` so that the app will work when you deploy to platforms like [Heroku](https://heroku.com).
-
-
-## Single-page app mode
-
-By default, sirv will only respond to requests that match files in `public`. This is to maximise compatibility with static fileservers, allowing you to deploy your app anywhere.
-
-If you're building a single-page app (SPA) with multiple routes, sirv needs to be able to respond to requests for *any* path. You can make it so by editing the `"start"` command in package.json:
-
-```js
-"start": "sirv public --single"
-```
+As we use a particular version of Puppeteer that [works in serverless environments](https://zeit.co/blog/serverless-chrome), the backend for extracting a website's metadata (`/api/extract`) won't likely work on your local machine. Thus, all API calls are pointing to the production service at `https://add-to-pinboard.now.sh/` by default, even in development. I'd be happy to fix that soon! 
 
 
 ## Deploying to the web
 
-### With [now](https://zeit.co/now)
-
-Install `now` if you haven't already:
+For using [now](https://zeit.co/now), install the CLI application if you haven't already:
 
 ```bash
 npm install -g now
 ```
 
-Then, from within your project folder:
-
-```bash
-cd public
-now deploy --name my-project
-```
-
-As an alternative, use the [Now desktop client](https://zeit.co/download) and simply drag the unzipped project folder to the taskbar icon.
-
-### With [surge](https://surge.sh/)
-
-Install `surge` if you haven't already:
-
-```bash
-npm install -g surge
-```
-
-Then, from within your project folder:
-
-```bash
-npm run build
-surge public my-project.surge.sh
-```
+Then, simply run `now` in the repository's root.
