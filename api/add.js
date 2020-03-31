@@ -10,6 +10,7 @@ async function addBookmark(token, url, title, opts = {}) {
     auth_token: token,
     url,
     description: title,
+    tags: Array.isArray(opts.tags) ? opts.tags.join(" ") : "",
     shared: opts.public || false ? "yes" : "no",
     toread: opts.toRead || true ? "yes" : "no"
   };
@@ -41,7 +42,7 @@ const handler = async (req, res) => {
       body.token,
       body.url,
       body.title,
-      submap(body, ["description", "share", "toRead"])
+      submap(body, ["description", "tags", "share", "toRead"])
     );
 
     res.status(200).send("OK");
