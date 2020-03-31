@@ -10,8 +10,8 @@ async function addBookmark(token, url, title, opts = {}) {
     auth_token: token,
     url,
     description: title,
-    shared: opts.public || false,
-    toread: opts.toRead || true
+    shared: opts.public || false ? "yes" : "no",
+    toread: opts.toRead || true ? "yes" : "no"
   };
   if (opts.description) {
     query.extended = opts.description;
