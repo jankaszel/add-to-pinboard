@@ -4,7 +4,7 @@
     import TextInput from '../components/TextInput.svelte'
     import Spinner from '../components/Spinner.svelte'
 
-    let url, loading = false, adding = false, title, rev = 0
+    let url, loading = false, adding = false, title, tags, rev = 0
     const extractTitleDebounced = _.debounce(extractTitle, 250)
 
     $: if (url) {
@@ -49,7 +49,12 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({token, url, title})
+                body: JSON.stringify({
+                    token,
+                    url,
+                    title,
+                    tags: tags.split(' ').map(tag => tag.trim())
+                })
             })
 
             if (res.status !== 200) {
@@ -58,6 +63,7 @@
 
             url = ''
             title = ''
+            tags = ''
         } catch (err) {
             console.error(err)
         } finally {
@@ -82,6 +88,9 @@
 
         <label for="title">Title of the resource:</label>
         <TextInput id="title" bind:value={title}/>
+
+        <label for="tags">Tags:</label>
+        <TextInput id="tags" bind:value={tags}/>
 
         <div class="actions">
             <button disabled={!title || !url} on:click={handleAdd}>Add</button>
