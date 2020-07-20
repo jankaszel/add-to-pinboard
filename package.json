@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "chrome-aws-lambda": "^2.1.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "micro-cors": "^0.1.1",
     "node-fetch": "^2.6.0",
     "normalize.css": "^8.0.1",
