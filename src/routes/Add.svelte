@@ -1,75 +1,75 @@
 <script>
-    import {fade} from 'svelte/transition';
-    import _ from 'lodash'
-    import TextInput from '../components/TextInput.svelte'
-    import Spinner from '../components/Spinner.svelte'
+  import { fade } from 'svelte/transition'
+  import _ from 'lodash'
+  import TextInput from '../components/TextInput.svelte'
+  import Spinner from '../components/Spinner.svelte'
 
-    let url, loading = false, adding = false, title, tags, rev = 0
-    const extractTitleDebounced = _.debounce(extractTitle, 250)
+  let url, loading = false, adding = false, title, tags, rev = 0
+  const extractTitleDebounced = _.debounce(extractTitle, 250)
 
-    $: if (url) {
-        extractTitleDebounced(url, ++rev)
+  $: if (url) {
+    extractTitleDebounced(url, ++rev)
+  }
+
+  function focus (el) {
+    el.focus()
+  }
+
+  async function extractTitle (url, _rev) {
+    loading = true
+
+    try {
+      const res = await fetch(`https://${process.env.VERCEL_URL}/api/extract?url=${encodeURIComponent(url)}`)
+      const data = await res.json()
+
+      if (_rev === rev) {
+        title = data.title
+      }
+    } catch (err) {
+      console.error(err)
+      title = ''
+    } finally {
+      loading = false
+    }
+  }
+
+  async function handleAdd (e) {
+    e.preventDefault()
+
+    if (!url || !title) {
+      return
     }
 
-    function focus(el) {
-        el.focus()
+    adding = true
+    const token = localStorage.getItem('pinboard-api-token')
+
+    try {
+      const res = await fetch(`https://${process.env.VERCEL_URL}/api/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          token,
+          url,
+          title,
+          tags: tags.split(' ').map(tag => tag.trim())
+        })
+      })
+
+      if (res.status !== 200) {
+        throw new Error(res.statusText)
+      }
+
+      url = ''
+      title = ''
+      tags = ''
+    } catch (err) {
+      console.error(err)
+    } finally {
+      adding = false
     }
-
-    async function extractTitle(url, _rev) {
-        loading = true
-
-        try {
-            const res = await fetch(`https://add-to-pinboard.now.sh/api/extract?url=${encodeURIComponent(url)}`)
-            const data = await res.json()
-
-            if (_rev === rev) {
-                title = data.title
-            }
-        } catch (err) {
-            console.error(err)
-            title = ''
-        } finally {
-            loading = false
-        }
-    }
-
-    async function handleAdd(e) {
-        e.preventDefault()
-
-        if (!url || !title) {
-            return
-        }
-
-        adding = true;
-        const token = localStorage.getItem('pinboard-api-token')
-
-        try {
-            const res = await fetch('https://add-to-pinboard.now.sh/api/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    token,
-                    url,
-                    title,
-                    tags: tags.split(' ').map(tag => tag.trim())
-                })
-            })
-
-            if (res.status !== 200) {
-                throw new Error(res.statusText)
-            }
-
-            url = ''
-            title = ''
-            tags = ''
-        } catch (err) {
-            console.error(err)
-        } finally {
-            adding = false
-        }
-    }
+  }
 </script>
 
 <main>
